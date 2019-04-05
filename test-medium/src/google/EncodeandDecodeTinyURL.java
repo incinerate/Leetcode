@@ -2,6 +2,7 @@ package google;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * inyURL is a URL shortening service where you enter a URL such as
@@ -53,6 +54,47 @@ public class EncodeandDecodeTinyURL {
 		return map.get(Integer.parseInt(shortUrl.replace("http://tinyURL.com/", "")));
 	}
 	
+	
+	
+	
+	 //用于存储长链接-短链接映射
+    private static Map<String, String> longShort = new HashMap();
+    //用于存储短链接-长链接映射
+    private static Map<String, String> shortLong = new HashMap();
+    private static String HOST = "www.tinyUrl.com/";
+
+    // Encodes a URL to a shortened URL.
+    public static String encode2(String longUrl) {
+        //如果映射中存在key则直接返回n 
+        if (longShort.containsKey(longUrl)) {
+            return HOST + longShort.get(longUrl);
+        }
+        //构造短链
+        String shortUrl;
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        //碰撞直到没有重复
+        do {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 6; i++) {
+                int n = (int) (Math.random() * chars.length());
+                sb.append(chars.charAt(n));
+            }
+            shortUrl = sb.toString();
+        } while (shortLong.containsKey(shortUrl));
+
+        //存储并返回
+        shortLong.put(shortUrl, longUrl);
+        longShort.put(longUrl, shortUrl);
+        return HOST + shortUrl;
+    }
+    
+    // Decodes a shortened URL to its original URL.
+    public static String decode2(String shortUrl) {
+        return shortLong.get(shortUrl.replace(HOST, ""));
+    }
+    
+    
+    
 	public static void main(String[] args) {
 		EncodeandDecodeTinyURL tinyURL = new EncodeandDecodeTinyURL();
 		System.out.println(tinyURL.encode1("https://leetcode.com/problems/design-tinyurl"));
